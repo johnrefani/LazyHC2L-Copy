@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-HC2L Navigation System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navigation_system.css') }}">
+</head>
+<body>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>D-HC2L Navigation System</h1>
+            <span class="version">v1.0.0</span>
+        </div>
+
+        <!-- Left Panel -->
+        <div class="left-panel">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="user">
+                    👤 User
+                </button>
+                <button class="tab-btn" data-tab="control">
+                    🎛️ Control
+                </button>
+            </div>
+
+            <!-- User Panel -->
+            <div class="panel-content" id="user-panel">
+                <div class="control-section">
+                    <h3>User Control Panel</h3>
+                </div>
+
+                <div class="control-section">
+                    <h3>Starting Point</h3>
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="startingPoint" 
+                               placeholder="Choose starting point, click on map..."
+                               value="Quezon City Hall, Quezon City">
+                    </div>
+                    <button class="btn btn-primary" id="setStartBtn">Pin Starting Point</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>Destination</h3>
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="destination" 
+                               placeholder="Choose your destination..."
+                               value="SM North EDSA, Quezon City">
+                    </div>
+                    <button class="btn btn-primary" id="setDestBtn" style="margin-bottom: 10px;">Pin Destination Point</button>
+                    <button class="btn btn-primary" id="findPathBtn">Find Path</button>
+                </div>
+
+                <div class="control-section" id="routeDisplaySection" style="display: none;">
+                    <h3>Current Path</h3>
+                    <div class="route-info" id="routeInfo">
+                        <div class="route-header">
+                            <div class="route-title" id="routeTitle">Route Found</div>
+                            <div class="route-summary" id="routeSummary">
+                                <div class="route-stat">
+                                    <div class="route-stat-label">Distance</div>
+                                    <div class="route-stat-value" id="routeDistance">-</div>
+                                </div>
+                                <div class="route-stat">
+                                    <div class="route-stat-label">Duration</div>
+                                    <div class="route-stat-value" id="routeDuration">-</div>
+                                </div>
+                                <div class="route-stat">
+                                    <div class="route-stat-label">Steps</div>
+                                    <div class="route-stat-value" id="routeSteps">-</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="route-path" id="routePath">
+                            <!-- Route steps will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Report a Disruption</h3>
+                    
+                    <div class="form-group">
+                        <label>Mark disruption location</label>
+                        <button class="btn btn-secondary" id="pinDisruptionBtn">Pin Disruption Point</button>
+                        <input type="text" class="form-input" id="disruptionLocation" 
+                               placeholder="Click 'Pin Disruption Point' then click on map..." readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label>What is the disruption type?</label>
+                        <select class="dropdown-select" id="disruptionType">
+                            <option value="">Select Disruption Type</option>
+                            <option value="accident">Traffic Accident</option>
+                            <option value="construction">Road Construction</option>
+                            <option value="flooding">Flooding</option>
+                            <option value="closure">Road Closure</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>What is the traffic flow?</label>
+                        <div class="traffic-level-buttons">
+                            <button class="traffic-btn" data-traffic="heavy">Heavy Traffic</button>
+                            <button class="traffic-btn active" data-traffic="medium">Medium Traffic</button>
+                            <button class="traffic-btn" data-traffic="light">Light Traffic</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="submitReportBtn">Submit Disruption Report</button>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="panel-content hidden" id="control-panel">
+                <div class="control-section">
+                    <h3>Control Panel</h3>
+                </div>
+
+                <div class="control-section">
+                    <h3>Statement of the Problem</h3>
+                    <div class="sop-buttons">
+                        <button class="sop-btn" data-sop="1">SOP 1</button>
+                        <button class="sop-btn" data-sop="2">SOP 2</button>
+                        <button class="sop-btn" data-sop="3">SOP 3</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Threshold Level</h3>
+                    <div class="threshold-display">Current: 0.5</div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Filter Disruption Type</h3>
+                    <select class="dropdown-select" id="filterDisruption">
+                        <option value="all">All Types</option>
+                        <option value="accident">Traffic Accident</option>
+                        <option value="construction">Road Construction</option>
+                        <option value="flooding">Flooding</option>
+                        <option value="closure">Road Closure</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>Performance Settings</h3>
+                    <button class="btn btn-primary" id="applyChangesBtn">Apply Changes</button>
+                    <button class="btn btn-secondary" id="exportSettingsBtn">Export Settings</button>
+                    <button class="btn btn-danger" id="clearDataBtn">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- SOP 1 Performance Metrics Modal -->
+    <div class="modal fade" id="sop1MetricsModal" tabindex="-1" aria-labelledby="sop1MetricsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="sop1MetricsModalLabel">
+                        <i class="fas fa-chart-line me-2"></i>SOP 1: Dynamic-HC2L Performance Metrics
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalMetricsContent">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Calculating metrics...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="refreshMetricsBtn">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh Metrics
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SOP 2 Algorithm Comparison Modal -->
+    <div class="modal fade" id="sop2MetricsModal" tabindex="-1" aria-labelledby="sop2MetricsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="sop2MetricsModalLabel">
+                        <i class="fas fa-balance-scale me-2"></i>SOP 2: Dynamic-HC2L vs DHL Algorithm Comparison
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalComparisonContent">
+                        <div class="text-center p-4">
+                            <div class="spinner-border text-info" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Running algorithm comparison...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-info" id="refreshComparisonBtn">
+                        <i class="fas fa-sync-alt me-1"></i>Refresh Comparison
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation_system.js') }}"></script>
+    
+    <!-- Load Google Maps JavaScript API -->
+    <script async defer 
+            src="https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap&libraries=places">
+    </script>
+</body>
+</html>

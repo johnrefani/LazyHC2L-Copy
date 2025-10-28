@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 3.16)
+project(HC2L_Dynamic LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# -------------------------------
+# Dynamic HC2L library
+# -------------------------------
+add_library(hc2l_dynamic_lib
+    src/Dynamic.cpp
+    src/logger.cpp
+    src/road_network.cpp
+    src/lazy_update_tracker.cpp
+    src/util.cpp
+    src/coordinate_mapper.cpp
+)
+
+target_include_directories(hc2l_dynamic_lib PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# -------------------------------
+# Main executable
+# -------------------------------
+
+# Main dynamic HC2L with impact score system
+add_executable(main_dynamic
+    src/main_dynamic.cpp
+)
+
+target_link_libraries(main_dynamic PRIVATE hc2l_dynamic_lib)
+
+target_include_directories(main_dynamic PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# GPS enhanced HC2L with coordinate mapping
+add_executable(main_enhanced
+    main_enhanced.cpp
+)
+
+target_link_libraries(main_enhanced PRIVATE hc2l_dynamic_lib)
+
+target_include_directories(main_enhanced PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# GPS routing JSON API
+add_executable(gps_routing_json_api
+    gps_routing_json_api.cpp
+    gps_routing_service_impl.cpp
+)
+
+target_link_libraries(gps_routing_json_api PRIVATE hc2l_dynamic_lib)
+
+target_include_directories(gps_routing_json_api PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
+# -------------------------------
+# Testing
+# -------------------------------
+enable_testing()
+# add_subdirectory(tests)  # Commented out as tests directory structure may vary

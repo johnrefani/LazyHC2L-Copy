@@ -466,6 +466,9 @@ public:
 
     void contract_seq(ContractionIndex &ci, std::vector<std::pair<std::pair<distance_t,distance_t>, NodeID> >& contracted_updates);
 
+    // Helper method for path reconstruction - get neighbors of a node
+    const std::vector<Neighbor>& get_neighbors(NodeID v) const;
+
     friend std::ostream& operator<<(std::ostream& os, const Graph &g);
     friend MultiThreadNodeData;
 };

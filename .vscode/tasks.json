@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "CMake Configure",
+      "type": "shell",
+      "command": "cmake -S . -B build -G \"MinGW Makefiles\" -DCMAKE_BUILD_TYPE=Release",
+      "group": "build"
+    },
+    {
+      "label": "CMake Build (All)",
+      "type": "shell",
+      "command": "cmake --build build -j",
+      "group": "build",
+      "dependsOn": ["CMake Configure"]
+    },
+    {
+      "label": "Run main_dynamic",
+      "type": "shell",
+      "command": "build\\core\\hc2l_dynamic\\main_dynamic.exe core\\hc2l_dynamic\\experiments\\data\\sample_graph.txt core\\hc2l_dynamic\\experiments\\data\\sample_disruptions.csv",
+      "group": "test"
+    }
+  ]
+}

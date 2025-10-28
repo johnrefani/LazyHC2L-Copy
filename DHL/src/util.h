@@ -57,7 +57,8 @@ void remove_set(std::vector<T> &v, const std::vector<T> set)
     assert(is_sorted(set.cbegin(), set.cend()));
     if (v.empty() || set.empty())
         return;
-    std::erase_if(v, [&set](T value) { return std::binary_search(set.cbegin(), set.cend(), value); });
+    auto it = std::remove_if(v.begin(), v.end(), [&set](T value) { return std::binary_search(set.cbegin(), set.cend(), value); });
+    v.erase(it, v.end());
 }
 
 struct Summary

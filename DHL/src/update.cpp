@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 
     // read index
     util::start_timer();
-    ifs.open(string(argv[2]) + string("_hcl"));
+    ifs.open(string(argv[2]) + string("_dhl"));
     ContractionIndex con_index(ifs);
     ifs.close();
     ifs.open(string(argv[2]) + string("_ch"));

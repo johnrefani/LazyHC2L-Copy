@@ -950,8 +950,13 @@ void Graph::add_edge(NodeID v, NodeID w, distance_t distance, bool add_reverse)
 
 void Graph::remove_edge(NodeID v, NodeID w)
 {
-    std::erase_if(node_data[v].neighbors, [w](const Neighbor &n) { return n.node == w; });
-    std::erase_if(node_data[w].neighbors, [v](const Neighbor &n) { return n.node == v; });
+    auto& v_neighbors = node_data[v].neighbors;
+    auto it_v = std::remove_if(v_neighbors.begin(), v_neighbors.end(), [w](const Neighbor &n) { return n.node == w; });
+    v_neighbors.erase(it_v, v_neighbors.end());
+    
+    auto& w_neighbors = node_data[w].neighbors;
+    auto it_w = std::remove_if(w_neighbors.begin(), w_neighbors.end(), [v](const Neighbor &n) { return n.node == v; });
+    w_neighbors.erase(it_w, w_neighbors.end());
 }
 
 pair<distance_t, pair<NodeID, NodeID> > Graph::random_update()
@@ -980,7 +985,8 @@ void Graph::remove_isolated()
             isolated.insert(node);
             node_data[node].subgraph_id = NO_SUBGRAPH;
         }
-    std::erase_if(nodes, [&isolated](NodeID node) { return isolated.contains(node); });
+    auto it = std::remove_if(nodes.begin(), nodes.end(), [&isolated](NodeID node) { return isolated.find(node) != isolated.end(); });
+    nodes.erase(it, nodes.end());
 }
 
 void Graph::reset()
@@ -2719,7 +2725,11 @@ Neighbor& Graph::UpNeighbor(ContractionHierarchy &ch, NodeID v, NodeID w) {
 	    return n;
         }
     }
-
+    
+    // If neighbor doesn't exist, add it with infinity distance
+    // This handles the case where the edge is being processed for the first time
+    ch.nodes[v].up_neighbors.push_back(Neighbor(w, infinity));
+    return ch.nodes[v].up_neighbors.back();
 }
 
 void Graph::IncCH(ContractionHierarchy &ch, vector<pair<pair<distance_t, distance_t>, pair<NodeID, NodeID> > >& updates, vector<pair<distance_t, pair<NodeID, NodeID> > > &C) {
@@ -3251,6 +3261,11 @@ ostream& operator<<(ostream& os, const Graph &g)
     g.node_data.normalize();
 #endif
     return os << "G(" << g.subgraph_id << "#" << g.nodes << " over " << g.node_data << ")";
+}
+
+const std::vector<Neighbor>& Graph::get_neighbors(NodeID v) const
+{
+    return node_data[v].neighbors;
 }
 
 } // road_network

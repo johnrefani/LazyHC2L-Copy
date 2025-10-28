@@ -1,0 +1,37 @@
+cmake_minimum_required(VERSION 3.10)
+project(DHL_Testing)
+
+# Set C++ standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Add compiler flags
+if(MSVC)
+    add_compile_options(/W4)
+else()
+    add_compile_options(-Wall -Wextra -O3)
+endif()
+
+# Source files
+set(COMMON_SOURCES
+    src/road_network.cpp
+    src/util.cpp
+)
+
+# Header directories
+include_directories(src)
+
+# Build executables
+add_executable(index src/index.cpp ${COMMON_SOURCES})
+add_executable(query src/query.cpp ${COMMON_SOURCES})
+add_executable(update src/update.cpp ${COMMON_SOURCES})
+add_executable(main_dhl main_dhl.cpp dhl_routing_service.cpp dhl_coordinate_mapper.cpp ${COMMON_SOURCES})
+add_executable(dhl_routing_json_api dhl_routing_json_api.cpp dhl_routing_service.cpp dhl_coordinate_mapper.cpp ${COMMON_SOURCES})
+
+# Enable threading
+find_package(Threads REQUIRED)
+target_link_libraries(index Threads::Threads)
+target_link_libraries(query Threads::Threads)
+target_link_libraries(update Threads::Threads)
+target_link_libraries(main_dhl Threads::Threads)
+target_link_libraries(dhl_routing_json_api Threads::Threads)

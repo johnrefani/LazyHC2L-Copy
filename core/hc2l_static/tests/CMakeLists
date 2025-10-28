@@ -1,0 +1,38 @@
+cmake_minimum_required(VERSION 3.10)
+project(hc2l_static_tests)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Find required packages
+find_package(GTest REQUIRED)
+find_package(Threads REQUIRED)
+
+# Test source files
+set(TEST_SOURCES
+    test_main.cpp
+    test_road_network.cpp
+    test_util.cpp
+    test_quezon_city_static.cpp
+)
+
+# Create test executable
+add_executable(hc2l_tests ${TEST_SOURCES})
+
+# Link libraries
+target_link_libraries(hc2l_tests 
+    PRIVATE 
+    hc2l_static_lib
+    GTest::gtest
+    GTest::gtest_main
+    Threads::Threads
+)
+
+# Include directories
+target_include_directories(hc2l_tests PRIVATE ../include)
+
+# Add test
+add_test(NAME hc2l_tests COMMAND hc2l_tests)
+
+# Set test properties
+set_property(TEST hc2l_tests PROPERTY WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
